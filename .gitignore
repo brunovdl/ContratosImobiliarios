@@ -6,7 +6,6 @@ documents.json
 .env
 
 # PDFs sensíveis
-pdfs/
 
 # Arquivos temporários
 *.log
