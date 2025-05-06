@@ -1,0 +1,13 @@
+# Dependências
+node_modules/
+
+# Arquivos gerados
+documents.json
+.env
+
+# PDFs sensíveis
+pdfs/
+
+# Arquivos temporários
+*.log
+.DS_Store

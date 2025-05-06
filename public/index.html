@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contratos Imobiliária</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
+    <h1 class="mb-4 text-primary">Pesquisar Contratos</h1>
+    <form id="search-form" class="w-100" style="max-width: 600px;">
+      <div class="input-group mb-3">
+        <input type="text" id="query" class="form-control" placeholder="Pesquise nos Contratos..." required>
+        <button type="submit" class="btn btn-primary">Pesquisar</button>
+      </div>
+    </form>
+    <div id="results" class="w-100" style="max-width: 600px;"></div>
+  </div>
+  <script>
+    const searchForm = document.getElementById('search-form');
+    const queryInput = document.getElementById('query');
+    const resultsDiv = document.getElementById('results');
+
+    searchForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = queryInput.value.trim();
+      if (!query) return;
+
+      resultsDiv.innerHTML = '<p class="text-center">Carregando...</p>';
+
+      try {
+        const response = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: query }),
+        });
+        const data = await response.json();
+
+        resultsDiv.innerHTML = `
+          <div class="mb-4">
+            <h5>Resposta:</h5>
+            <p>${data.answer}</p>
+          </div>
+          <h5>Documentos Relevantes:</h5>
+          ${data.relevantDocs.map((doc, index) => `
+            <div class="mb-3">
+              <h6><a href="#" class="text-primary">${doc}</a></h6>
+              <p class="text-muted">Locador: ${data.locadores[index]?.name || 'N/A'} (CNPJ: ${data.locadores[index]?.cnpj || 'N/A'}, RG: ${data.locadores[index]?.rg || 'N/A'})</p>
+              <p class="text-muted">Locatário: ${data.locatarios[index]?.name || 'N/A'} (RG: ${data.locatarios[index]?.rg || 'N/A'})</p>
+            </div>
+          `).join('')}
+        `;
+      } catch (error) {
+        resultsDiv.innerHTML = '<p class="text-danger">Erro ao realizar a pesquisa.</p>';
+      }
+    });
+  </script>
+</body>
+</html>
